@@ -63,10 +63,12 @@ const toggleComplete = (todo) => {
 
     <!-- 목록 영역 -->
     <ul class="todo-list">
-      <li v-for="todo in todos" :key="todo.id" :class="{ completed: todo.completed }">
-        <span @click="toggleComplete(todo)">{{ todo.text }}</span>
-        <button @click="deleteTodo(todo.id)" class="delete-btn">삭제</button>
-      </li>
+      <transition-group name="list">
+        <li v-for="todo in todos" :key="todo.id" :class="{ completed: todo.completed }">
+          <span @click="toggleComplete(todo)">{{ todo.text }}</span>
+          <button @click="deleteTodo(todo.id)" class="delete-btn">삭제</button>
+        </li>
+      </transition-group>
     </ul>
 
     <div v-if="todos.length === 0" class="empty">
@@ -130,5 +132,19 @@ const toggleComplete = (todo) => {
   margin-top: 2rem;
   text-align: center;
   color: blue;
+}
+
+/* 리스트 전환 애니메이션 */
+.list-enter-active,
+.list-leave-active {
+  transition: all 0.5s ease;
+}
+.list-enter-from {
+  opacity: 0;
+  transform: translateX(30px);
+}
+.list-leave-to {
+  opacity: 0;
+  transform: translateX(-30px);
 }
 </style>

@@ -8,13 +8,28 @@ import Footer from './components/Footer.vue'
     <Header />
     <!-- 라우터가 현재 URL에 맞는 컴포넌트를 여기에 렌더링합니다. -->
     <main class="main-content">
-      <router-view />
+      <router-view v-slot="{ Component }">
+        <transition name="fade" mode="out-in">
+          <component :is="Component" />
+        </transition>
+      </router-view>
     </main>
     <Footer />
   </div>
 </template>
 
 <style scoped>
+/* 페이지 전환 페이드 효과 */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
 .layout {
   display: flex;
   flex-direction: column;
