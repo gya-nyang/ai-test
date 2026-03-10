@@ -13,7 +13,7 @@
 
 <style scoped>
 .header {
-  background-color: #333;
+  background-color: blue;
   color: white;
   padding: 1rem;
   display: flex;
