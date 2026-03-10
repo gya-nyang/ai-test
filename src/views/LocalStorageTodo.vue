@@ -1,150 +1,248 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue'
 
-// 1. 상태(State) 정의: 사용자 입력을 받을 텍스트와 할 일 목록 배열
 const newTodoText = ref('')
 const todos = ref([])
 
-// 2. 초기 데이터 로드: 컴포넌트가 마운트될 때(onMounted) 로컬스토리지에서 데이터를 읽어옵니다.
 onMounted(() => {
   const savedTodos = localStorage.getItem('vue3-todos-local')
   if (savedTodos) {
-    // 로컬스토리지에 저장된 JSON 문자열을 다시 배열 형태로 변환합니다.
     todos.value = JSON.parse(savedTodos)
   }
 })
 
-// 3. 데이터 자동 저장: watch를 사용하여 todos 배열이 변경될 때마다 로컬스토리지에 업데이트합니다.
-// { deep: true } 옵션은 배열 내부 요소의 속성 변경(예: 완료 여부 토글)까지 감지합니다.
 watch(todos, (newVal) => {
   localStorage.setItem('vue3-todos-local', JSON.stringify(newVal))
 }, { deep: true })
 
-// 4. 할 일 추가 로직
 const addTodo = () => {
   if (newTodoText.value.trim() === '') return
-
   const todo = {
-    id: Date.now(), // 유니크한 ID 생성 (간단히 현재 시간 사용)
+    id: Date.now(),
     text: newTodoText.value,
     completed: false
   }
-  
-  // 배열 앞에 새 항목 추가
   todos.value.unshift(todo)
-  // 입력 필드 초기화
   newTodoText.value = ''
 }
 
-// 5. 할 일 삭제 로직
 const deleteTodo = (id) => {
   todos.value = todos.value.filter(t => t.id !== id)
 }
 
-// 6. 전체 완료 여부 체크 (필터링 예제)
 const toggleComplete = (todo) => {
   todo.completed = !todo.completed
 }
 </script>
 
 <template>
-  <div class="todo-app">
-    <h3>로컬 스토리지 할 일 목록</h3>
-    
-    <!-- 입력 영역: @keyup.enter로 엔터키를 눌렀을 때도 추가되도록 함 -->
-    <div class="input-group">
-      <input 
-        v-model="newTodoText" 
-        placeholder="할 일을 입력하세요" 
-        @keyup.enter="addTodo"
-      />
-      <button @click="addTodo">추가</button>
-    </div>
+  <div class="todo-view">
+    <div class="todo-card">
+      <header class="card-header">
+        <h3>할 일 목록</h3>
+        <p class="subtitle">로컬 스토리지에 안전하게 보관됩니다.</p>
+      </header>
+      
+      <div class="input-area">
+        <input 
+          v-model="newTodoText" 
+          placeholder="오늘 어떤 일을 하시나요?" 
+          @keyup.enter="addTodo"
+          class="todo-input"
+        />
+        <button @click="addTodo" class="add-button">추가</button>
+      </div>
 
-    <!-- 목록 영역 -->
-    <ul class="todo-list">
-      <transition-group name="list">
-        <li v-for="todo in todos" :key="todo.id" :class="{ completed: todo.completed }">
-          <span @click="toggleComplete(todo)">{{ todo.text }}</span>
-          <button @click="deleteTodo(todo.id)" class="delete-btn">삭제</button>
-        </li>
-      </transition-group>
-    </ul>
-
-    <div v-if="todos.length === 0" class="empty">
-      할 일이 없습니다. 위에서 추가해 보세요!
+      <div class="todo-list-container">
+        <ul class="todo-list">
+          <transition-group name="list">
+            <li v-for="todo in todos" :key="todo.id" :class="{ completed: todo.completed }">
+              <div class="todo-item-content">
+                <div class="checkbox" @click="toggleComplete(todo)">
+                  <div class="check-mark" v-if="todo.completed">✓</div>
+                </div>
+                <span class="text" @click="toggleComplete(todo)">{{ todo.text }}</span>
+              </div>
+              <button @click="deleteTodo(todo.id)" class="delete-btn">삭제</button>
+            </li>
+          </transition-group>
+        </ul>
+        
+        <div v-if="todos.length === 0" class="empty-state">
+          <p>모든 일을 마치셨네요!</p>
+        </div>
+      </div>
     </div>
     
     <router-link to="/" class="back-link">← 홈으로 돌아가기</router-link>
   </div>
 </template>
 
-<style scoped>
-.todo-app {
-  max-width: 500px;
+<style lang="scss" scoped>
+@import "../assets/styles/_variables.scss";
+
+// 투두 뷰: 부드러운 배경과 중앙 정렬
+.todo-view {
+  max-width: 600px;
   margin: 0 auto;
-  padding: 1rem;
+  padding: 60px 22px;
 }
-.input-group {
+
+// 투두 카드: 애플 스타일의 부드러운 모서리와 그림자
+.todo-card {
+  background: $color-bg-white;
+  border-radius: $border-radius;
+  box-shadow: 0 4px 24px $color-shadow;
+  padding: 32px;
+  margin-bottom: 24px;
+}
+
+.card-header {
+  margin-bottom: 32px;
+  h3 {
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0 0 4px 0;
+  }
+  .subtitle {
+    font-size: 14px;
+    color: $color-text-secondary;
+    margin: 0;
+  }
+}
+
+// 입력 영역: 세련된 커스텀 입력 필드
+.input-area {
   display: flex;
-  gap: 0.5rem;
-  margin-bottom: 2rem;
+  gap: 12px;
+  margin-bottom: 32px;
+
+  .todo-input {
+    flex: 1;
+    padding: 12px 16px;
+    font-size: 16px;
+    border: 1px solid $color-border;
+    border-radius: $border-radius - 4px;
+    background-color: #fafafa;
+    transition: all $transition-speed ease;
+
+    &:focus {
+      outline: none;
+      background-color: white;
+      border-color: $color-accent;
+      box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+    }
+  }
+
+  .add-button {
+    background-color: $color-accent;
+    color: white;
+    padding: 0 24px;
+    font-weight: 500;
+    border-radius: $border-radius - 4px;
+    transition: background-color $transition-speed;
+
+    &:hover {
+      background-color: $color-accent-hover;
+    }
+  }
 }
-.input-group input {
-  flex: 1;
-  padding: 0.5rem;
-}
+
+// 리스트 아이템: 체크박스 스타일링 포함
 .todo-list {
   list-style: none;
   padding: 0;
-}
-.todo-list li {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.8rem;
-  border-bottom: 1px solid #ddd;
-  background: white;
-}
-.todo-list li.completed span {
-  text-decoration: line-through;
-  color: #888;
-}
-.todo-list li span {
-  cursor: pointer;
-  flex: 1;
-}
-.delete-btn {
-  background-color: #ff4d4d;
-  color: white;
-  border: none;
-  padding: 0.3rem 0.6rem;
-  border-radius: 4px;
-  cursor: pointer;
-}
-.empty {
-  text-align: center;
-  color: #888;
-  margin-top: 2rem;
-}
-.back-link {
-  display: block;
-  margin-top: 2rem;
-  text-align: center;
-  color: blue;
+  margin: 0;
+
+  li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 0;
+    border-bottom: 1px solid #f2f2f2;
+    transition: opacity 0.3s;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &.completed {
+      .text {
+        text-decoration: line-through;
+        color: $color-text-secondary;
+      }
+      .checkbox {
+        background-color: #34c759; // 애플 그린 컬러
+        border-color: #34c759;
+      }
+    }
+  }
 }
 
-/* 리스트 전환 애니메이션 */
-.list-enter-active,
-.list-leave-active {
-  transition: all 0.5s ease;
+.todo-item-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+
+  .text {
+    cursor: pointer;
+    font-size: 17px;
+  }
 }
-.list-enter-from {
-  opacity: 0;
-  transform: translateX(30px);
+
+// 커스텀 체크박스
+.checkbox {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid $color-border;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+
+  .check-mark {
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+  }
 }
-.list-leave-to {
-  opacity: 0;
-  transform: translateX(-30px);
+
+.delete-btn {
+  background: transparent;
+  color: #ff3b30; // 애플 레드 컬러
+  font-size: 14px;
+  font-weight: 400;
+  opacity: 0; // 평소에는 숨김
+  transition: opacity 0.2s;
+
+  &:hover {
+    text-decoration: underline;
+  }
 }
+
+.todo-list li:hover .delete-btn {
+  opacity: 1; // 호버 시에만 삭제 버튼 노출
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px 0;
+  color: $color-text-secondary;
+  font-size: 15px;
+}
+
+.back-link {
+  display: block;
+  text-align: center;
+  font-size: 14px;
+  color: $color-text-secondary;
+}
+
+// 리스트 트랜지션
+.list-enter-active, .list-leave-active { transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+.list-enter-from { opacity: 0; transform: translateY(10px); }
+.list-leave-to { opacity: 0; transform: scale(0.95); }
 </style>
