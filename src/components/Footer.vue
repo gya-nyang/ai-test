@@ -1,6 +1,6 @@
 <template>
   <footer class="footer">
-    <p>&copy; 2024 My Vite-Vue Application. All rights reserved.</p>
+    <p>&copy; 2024 My Vite-Vue Application. 모든 권리 보유.</p>
   </footer>
 </template>
 

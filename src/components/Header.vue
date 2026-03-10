@@ -1,11 +1,11 @@
 <template>
   <header class="header">
-    <h1>My Website</h1>
+    <h1>나의 웹사이트</h1>
     <nav>
       <ul>
-        <li>Home</li>
-        <li>About</li>
-        <li>Contact</li>
+        <li>홈</li>
+        <li>소개</li>
+        <li>문의</li>
       </ul>
     </nav>
   </header>

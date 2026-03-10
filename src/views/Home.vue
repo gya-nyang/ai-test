@@ -1,10 +1,10 @@
 <template>
   <div class="home">
-    <h2>Todo App Versions</h2>
-    <p>Please select a version to try:</p>
+    <h2>투두 앱 버전 선택</h2>
+    <p>사용해 볼 버전을 선택하세요:</p>
     <div class="links">
-      <router-link to="/local-todo" class="btn">LocalStorage Version</router-link>
-      <div class="btn disabled">Serverless DB Version (Coming Soon)</div>
+      <router-link to="/local-todo" class="btn">로컬 스토리지 버전</router-link>
+      <div class="btn disabled">서버리스 DB 버전 (준비 중)</div>
     </div>
   </div>
 </template>

@@ -49,31 +49,31 @@ const toggleComplete = (todo) => {
 
 <template>
   <div class="todo-app">
-    <h3>Local Storage Todo List</h3>
+    <h3>로컬 스토리지 할 일 목록</h3>
     
     <!-- 입력 영역: @keyup.enter로 엔터키를 눌렀을 때도 추가되도록 함 -->
     <div class="input-group">
       <input 
         v-model="newTodoText" 
-        placeholder="What needs to be done?" 
+        placeholder="할 일을 입력하세요" 
         @keyup.enter="addTodo"
       />
-      <button @click="addTodo">Add</button>
+      <button @click="addTodo">추가</button>
     </div>
 
     <!-- 목록 영역 -->
     <ul class="todo-list">
       <li v-for="todo in todos" :key="todo.id" :class="{ completed: todo.completed }">
         <span @click="toggleComplete(todo)">{{ todo.text }}</span>
-        <button @click="deleteTodo(todo.id)" class="delete-btn">Delete</button>
+        <button @click="deleteTodo(todo.id)" class="delete-btn">삭제</button>
       </li>
     </ul>
 
     <div v-if="todos.length === 0" class="empty">
-      No tasks here. Add one above!
+      할 일이 없습니다. 위에서 추가해 보세요!
     </div>
     
-    <router-link to="/" class="back-link">← Go Back Home</router-link>
+    <router-link to="/" class="back-link">← 홈으로 돌아가기</router-link>
   </div>
 </template>
 
