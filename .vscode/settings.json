@@ -1,0 +1,6 @@
+{
+    "editor.renderControlCharacters": false,
+    "editor.letterSpacing": 0,
+    "editor.cursorBlinking": "solid",
+    "editor.inputMethodEditorControl": true
+}
